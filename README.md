@@ -14,7 +14,7 @@ Numeralize.nvim is a Neovim plugin that converts numbers in your text to their c
 {
     'svban/numeralize.nvim',
     opts={},
-    cmd={"NumbersToWords", "NumberToRoman"}
+    cmd={"NumbersToWords", "NumbersToRoman"}
 }
 ```
 - an external library is required, it will be automatically installed, but if it doesn't for some reason, you can use `pip3 install num2words`
@@ -31,7 +31,7 @@ To convert numbers to words, use the following command:
 ### Convert Numbers to Roman numerals
 To convert numbers to Roman numerals, use the following command:
 ```vim
-:NumberToRoman p<pattern>
+:NumbersToRoman p<pattern>
 ```
 - p<pattern>: Specifies the pattern to match numbers. Prefix the pattern with p.
 
@@ -44,7 +44,7 @@ To convert all numbers in the buffer to words:
 
 To convert all numbers in the buffer to Roman numerals:
 ```vim
-:NumberToRoman p\d\+
+:NumbersToRoman p\d\+
 ```
 
 ## Inspirations

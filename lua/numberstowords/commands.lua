@@ -78,7 +78,9 @@ local function number_to_roman(number)
 		return ""
 	end
 	if number < 1 or number > 3999 then
-		print("Number too big: ", number)
+		if number > 3999 then
+			print("Number too big: ", number)
+		end
 		return ""
 	end
 

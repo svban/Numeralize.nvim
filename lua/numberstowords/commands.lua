@@ -1,6 +1,26 @@
 local M = {}
 local RegexUtil = require("numbsub.regex_util")
 
+local function parse_args(args)
+	local pattern = nil
+	local conversion_type = "c" -- Default to 'c' (cardinal)
+
+	for _, arg in ipairs(args) do
+		if arg:sub(1, 1) == "p" then
+			pattern = arg:sub(2)
+		elseif arg == "c" or arg == "o" then
+			conversion_type = arg
+		end
+	end
+
+	if not pattern then
+		vim.api.nvim_err_writeln("Pattern not specified. Please prefix the pattern with 'p'.")
+		return nil, nil
+	end
+
+	return pattern, conversion_type
+end
+
 -- Check and install num2words if not present
 local function ensure_num2words_installed()
 	local handle = io.popen("pip show num2words")
@@ -121,26 +141,6 @@ function M.convert_numbers_to_roman(args)
 			end
 		end
 	end
-end
-
-local function parse_args(args)
-	local pattern = nil
-	local conversion_type = "c" -- Default to 'c' (cardinal)
-
-	for _, arg in ipairs(args) do
-		if arg:sub(1, 1) == "p" then
-			pattern = arg:sub(2)
-		elseif arg == "c" or arg == "o" then
-			conversion_type = arg
-		end
-	end
-
-	if not pattern then
-		vim.api.nvim_err_writeln("Pattern not specified. Please prefix the pattern with 'p'.")
-		return nil, nil
-	end
-
-	return pattern, conversion_type
 end
 
 -- Function to convert numbers to Roman numerals (dedicated command)

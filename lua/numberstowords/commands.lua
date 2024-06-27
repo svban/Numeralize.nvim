@@ -26,7 +26,6 @@ local function ensure_num2words_installed()
 	local handle = io.popen("pip show num2words")
 	local result = handle:read("*a")
 	handle:close()
-	print(result)
 
 	if result == "" then
 		vim.api.nvim_out_write("num2words not found. Installing...\n")
@@ -79,7 +78,7 @@ local function number_to_roman(number)
 		return ""
 	end
 	if number < 1 or number > 3999 then
-		print("Number too big!")
+		print("Number too big: ", number)
 		return ""
 	end
 
@@ -134,7 +133,6 @@ function M.convert_numbers_to_roman(args)
 						local pattern_escaped = vim.pesc(number)
 						local command =
 							string.format("keepjumps keeppatterns :%ds/%s/%s", i, pattern_escaped, roman_numeral)
-						print(command)
 						vim.cmd(command)
 					end
 				end

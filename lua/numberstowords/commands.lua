@@ -74,13 +74,7 @@ end
 
 -- Function to convert a number to Roman numeral in Lua
 local function number_to_roman(number)
-	if type(number) ~= "number" then
-		return ""
-	end
-	if number < 1 or number > 3999 then
-		if number > 3999 then
-			print("Number too big: ", number)
-		end
+	if type(number) ~= "number" or number < 1 or number > 3999 then
 		return ""
 	end
 

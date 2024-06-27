@@ -5,9 +5,15 @@ from num2words import num2words
 
 def convert_number_to_words(number, conversion_type):
     if conversion_type == "o":
-        return num2words(number, to="ordinal")
+        if number < 0:
+            return "negative " + num2words(abs(number), to="ordinal")
+        else:
+            return num2words(number, to="ordinal")
     else:
-        return num2words(number)
+        if number < 0:
+            return "negative " + num2words(abs(number))
+        else:
+            return num2words(number)
 
 
 if __name__ == "__main__":

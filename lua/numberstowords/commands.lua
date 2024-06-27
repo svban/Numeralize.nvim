@@ -36,10 +36,17 @@ end
 local function number_to_words(number, conversion_type)
 	local script_dir = vim.fn.fnamemodify(debug.getinfo(1).source:sub(2), ":p:h")
 	local script_path = script_dir .. "/convert_numbers.py"
-	local handle = io.popen(string.format("python3 %s %d %s", script_path, number, conversion_type))
+
+	-- Determine the command to execute based on number sign
+	local python_cmd = string.format('python3 "%s" %d %s', script_path, number, conversion_type)
+
+	-- Execute the command and read the result
+	local handle = io.popen(python_cmd)
 	local result = handle:read("*a")
 	handle:close()
-	return result:gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1") -- Remove extra whitespace
+
+	-- Remove extra whitespace from the result
+	return result:gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1")
 end
 
 function M.convert_numbers_to_words(args)
@@ -49,38 +56,28 @@ function M.convert_numbers_to_words(args)
 		return
 	end
 
-	-- Get lines
-	local bufnr = vim.api.nvim_get_current_buf()
-	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-	-- Iterate through the lines in the specified range
-	for i, line in ipairs(lines) do
-		local matches = RegexUtil.get_vim_matches(pattern, line)
-
-		-- Check if there are any matches in the current line
-		if next(matches) ~= nil then
-			for _, number in ipairs(matches) do
-				local num = tonumber(number)
-				if num then
-					local words = number_to_words(num, conversion_type)
-					if words and words ~= "" then
-						-- Escape the pattern to avoid issues with special characters
-						local pattern_escaped = vim.pesc(number)
-						-- Replace only the exact match
-						line = line:gsub("%f[%d]" .. pattern_escaped .. "%f[%D]", words)
-					end
-				end
-			end
-			-- Update the buffer with the modified line
-			vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { line })
+	_G.convert_numbers_to_words_helper = function()
+		local current_value
+		local current_value_str = vim.fn.matchstr(vim.fn.submatch(0), "-\\?\\d\\+")
+		if current_value_str == "" then
+			error("No numeric value found in the match")
 		end
+		current_value = tonumber(current_value_str)
+		if current_value == nil then
+			error("Failed to convert the matched value to a number")
+		end
+
+		return number_to_words(current_value)
 	end
+	-- Construct the Vim command for substitution
+	local cmd = string.format("%%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_words_helper()/g", pattern)
+	vim.cmd(cmd)
 end
 
 -- Function to convert a number to Roman numeral in Lua
 local function number_to_roman(number)
 	if type(number) ~= "number" or number < 1 or number > 3999 then
-		return ""
+		return number
 	end
 
 	local roman_numerals = {
@@ -117,32 +114,22 @@ function M.convert_numbers_to_roman(args)
 		return
 	end
 
-	-- Get lines
-	local bufnr = vim.api.nvim_get_current_buf()
-	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-	-- Iterate through the lines in the specified range
-	for i, line in ipairs(lines) do
-		local matches = RegexUtil.get_vim_matches(pattern, line)
-
-		-- Check if there are any matches in the current line
-		if next(matches) ~= nil then
-			-- Replace matches one by one
-			for _, number in ipairs(matches) do
-				local num = tonumber(number)
-				local roman_numeral = number_to_roman(num)
-				if roman_numeral ~= "" then
-					-- Escape the pattern to avoid issues with special characters
-					local pattern_escaped = vim.pesc(number)
-					-- Replace only the exact match
-					line = line:gsub("%f[%d]" .. pattern_escaped .. "%f[%D]", roman_numeral)
-				end
-			end
-			-- Update the buffer with the modified line
-			vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { line })
+	_G.convert_numbers_to_roman_helper = function()
+		local current_value
+		local current_value_str = vim.fn.matchstr(vim.fn.submatch(0), "\\d\\+")
+		if current_value_str == "" then
+			error("No numeric value found in the match")
 		end
+		current_value = tonumber(current_value_str)
+		if current_value == nil then
+			error("Failed to convert the matched value to a number")
+		end
+
+		return number_to_roman(current_value)
 	end
+	-- Construct the Vim command for substitution
+	local cmd = string.format("%%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_roman_helper()/g", pattern)
+	vim.cmd(cmd)
 end
 
--- Function to convert numbers to Roman numerals (dedicated command)
 return M

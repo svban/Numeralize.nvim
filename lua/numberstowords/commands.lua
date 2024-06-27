@@ -63,11 +63,16 @@ function M.convert_numbers_to_words(args)
 				local num = tonumber(number)
 				if num then
 					local words = number_to_words(num, conversion_type)
-					local pattern_escaped = vim.pesc(number)
-					local command = string.format("keepjumps keeppatterns :%ds/%s/%s", i, pattern_escaped, words)
-					vim.cmd(command)
+					if words and words ~= "" then
+						-- Escape the pattern to avoid issues with special characters
+						local pattern_escaped = vim.pesc(number)
+						-- Replace only the exact match
+						line = line:gsub("%f[%d]" .. pattern_escaped .. "%f[%D]", words)
+					end
 				end
 			end
+			-- Update the buffer with the modified line
+			vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { line })
 		end
 	end
 end
@@ -105,6 +110,7 @@ local function number_to_roman(number)
 
 	return result
 end
+
 function M.convert_numbers_to_roman(args)
 	local pattern, _ = parse_args(args)
 	if not pattern then
@@ -121,18 +127,19 @@ function M.convert_numbers_to_roman(args)
 
 		-- Check if there are any matches in the current line
 		if next(matches) ~= nil then
+			-- Replace matches one by one
 			for _, number in ipairs(matches) do
 				local num = tonumber(number)
-				if num then
-					local roman_numeral = number_to_roman(num)
-					if roman_numeral ~= "" then
-						local pattern_escaped = vim.pesc(number)
-						local command =
-							string.format("keepjumps keeppatterns :%ds/%s/%s", i, pattern_escaped, roman_numeral)
-						vim.cmd(command)
-					end
+				local roman_numeral = number_to_roman(num)
+				if roman_numeral ~= "" then
+					-- Escape the pattern to avoid issues with special characters
+					local pattern_escaped = vim.pesc(number)
+					-- Replace only the exact match
+					line = line:gsub("%f[%d]" .. pattern_escaped .. "%f[%D]", roman_numeral)
 				end
 			end
+			-- Update the buffer with the modified line
+			vim.api.nvim_buf_set_lines(bufnr, i - 1, i, false, { line })
 		end
 	end
 end

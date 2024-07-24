@@ -1,6 +1,6 @@
 # Numeralize.nvim
 
-Numeralize.nvim is a Neovim plugin that converts numbers in your text to their corresponding words or Roman numerals. This plugin allows you to easily convert numbers in a specified pattern to either English words or Roman numerals within your Neovim buffer.
+Numeralize.nvim is a Neovim plugin that converts numbers into text or Roman numerals. This plugin allows you to easily convert numbers in a specified pattern to either English words or Roman numerals within your Neovim buffer.
 
 ## Features
 - Convert numbers to English words

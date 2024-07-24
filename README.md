@@ -7,6 +7,7 @@ Numeralize.nvim is a Neovim plugin that converts numbers into text or Roman nume
 - Supports both cardinal and ordinal numbers
 - Convert numbers to Roman numerals
 - Supports custom patterns for matching numbers
+- Supports negative numbers
 
 ## Installation
 ### Using [lazy.nvim](https://github.com/folke/lazy.nvim)

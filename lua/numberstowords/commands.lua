@@ -23,7 +23,7 @@ end
 
 -- Check and install num2words if not present
 local function ensure_num2words_installed()
-	local handle = io.popen("pip show num2words")
+	local handle = io.popen("pip3 show num2words")
 	local result = handle:read("*a")
 	handle:close()
 
@@ -70,7 +70,7 @@ function M.convert_numbers_to_words(args)
 		return number_to_words(current_value)
 	end
 	-- Construct the Vim command for substitution
-	local cmd = string.format("%%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_words_helper()/g", pattern)
+	local cmd = string.format("keeppatterns %%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_words_helper()/g", pattern)
 	vim.cmd(cmd)
 end
 
@@ -128,7 +128,7 @@ function M.convert_numbers_to_roman(args)
 		return number_to_roman(current_value)
 	end
 	-- Construct the Vim command for substitution
-	local cmd = string.format("%%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_roman_helper()/g", pattern)
+	local cmd = string.format("keeppatterns %%s/\\(%s\\)/\\=v:lua._G.convert_numbers_to_roman_helper()/g", pattern)
 	vim.cmd(cmd)
 end
 
